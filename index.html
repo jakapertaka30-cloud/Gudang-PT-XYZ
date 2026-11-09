@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Warehouse Management System untuk pengelolaan bahan baku produksi kasur" />
+    <title>WMS Mattress</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./style.css?v=2" />
+  </head>
+  <body>
+    <main id="authGate" class="auth-gate">
+      <form id="loginForm" class="auth-card">
+        <img class="auth-logo" src="./logo.svg" alt="" />
+        <p class="eyebrow">Warehouse Management System</p>
+        <h1>Masuk ke WMS</h1>
+        <p id="authStatus" class="auth-status" role="status">Memeriksa konfigurasi Supabase…</p>
+        <label>Email<input id="loginEmail" type="email" autocomplete="username" required /></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required /></label>
+        <button id="loginButton" class="primary-btn" type="submit" disabled>Masuk</button>
+      </form>
+    </main>
+
+    <div class="app-shell" hidden>
+      <aside class="sidebar">
+        <a class="brand-wrap" href="#" data-go-view="dashboard" aria-label="WMS Mattress Dashboard">
+          <img class="brand-mark" src="./logo.svg" alt="" />
+          <span class="brand-copy"><strong>WMS</strong><small>MATTRESS</small></span>
+        </a>
+        <nav class="sidebar-nav" aria-label="Navigasi utama">
+          <p class="nav-caption">MENU UTAMA</p>
+          <button class="nav-btn active" type="button" data-view="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+          <p class="nav-caption">MASTER DATA</p>
+          <button class="nav-btn" type="button" data-view="materials"><span class="nav-icon">▤</span>Master Bahan Baku</button>
+          <button class="nav-btn" type="button" data-view="suppliers"><span class="nav-icon">♙</span>Suppliers</button>
+          <button class="nav-btn" type="button" data-view="locations"><span class="nav-icon">⌖</span>Locations</button>
+          <p class="nav-caption">INVENTORY TRANSACTION</p>
+          <button class="nav-btn" type="button" data-view="receiving"><span class="nav-icon">↓</span>Barang Masuk</button>
+          <button class="nav-btn" type="button" data-view="qc"><span class="nav-icon">✓</span>Quality Control</button>
+          <button class="nav-btn" type="button" data-view="putaway"><span class="nav-icon">⇲</span>Putaway</button>
+          <button class="nav-btn" type="button" data-view="issuing"><span class="nav-icon">↑</span>Barang Keluar</button>
+          <p class="nav-caption">INVENTORY CONTROL</p>
+          <button class="nav-btn" type="button" data-view="stock"><span class="nav-icon">▣</span>Stok Gudang</button>
+          <button class="nav-btn" type="button" data-view="movement"><span class="nav-icon">⇄</span>Stock Movement</button>
+          <button class="nav-btn" type="button" data-view="opname"><span class="nav-icon">Σ</span>Stock Opname</button>
+          <p class="nav-caption">REPORTS</p>
+          <button class="nav-btn" type="button" data-view="reports"><span class="nav-icon">▥</span>Laporan</button>
+        </nav>
+        <div class="sidebar-footer"><span class="online-dot"></span> Sistem inventaris aktif</div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Warehouse Management System</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="admin-chip"><span class="admin-avatar">AG</span><span><strong id="authUserEmail">Pengguna</strong><small id="authRoleLabel">WMS</small></span></div>
+            <span class="status-pill"><span class="status-dot"></span><span id="lastUpdated">Data tersimpan</span></span>
+            <button id="refreshCloudBtn" class="secondary-btn" type="button">Muat ulang cloud</button>
+            <button id="signOutBtn" class="secondary-btn" type="button">Keluar</button>
+          </div>
+        </header>
+
+        <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+        <section id="dashboard-view" class="view active">
+          <div class="page-intro">
+            <div><h2>Ringkasan Gudang</h2><p>Pantau kondisi stok dan aktivitas bahan baku hari ini.</p></div>
+            <div class="today-label" id="dashboardDate"></div>
+          </div>
+          <div class="stats-grid dashboard-stats">
+            <article class="stat-card"><span>Total Jenis Bahan Baku</span><strong id="totalMaterialsStat">0</strong><small>Item master aktif</small></article>
+            <article class="stat-card accent-green"><span>Total Kuantitas Persediaan</span><strong id="totalStockStat">0</strong><small>Jumlah lintas satuan</small></article>
+            <article class="stat-card accent-blue"><span>Material dengan Stok</span><strong id="availableStockStat">0</strong><small>Stok lebih dari nol</small></article>
+            <article class="stat-card accent-green"><span>Status Normal</span><strong id="normalStockStat">0</strong><small>Dalam rentang minimum–maksimum</small></article>
+            <article class="stat-card accent-orange"><span>Di Bawah Minimum</span><strong id="lowStockStat">0</strong><small>Perlu dipantau</small></article>
+            <article class="stat-card accent-red"><span>Stockout</span><strong id="outOfStockStat">0</strong><small>Stok aktual nol</small></article>
+            <article class="stat-card accent-blue"><span>Di Atas Maksimum</span><strong id="overStockStat">0</strong><small>Perlu evaluasi persediaan</small></article>
+            <article class="stat-card"><span>Parameter Belum Lengkap</span><strong id="incompleteStockStat">0</strong><small>Minimum atau maksimum belum valid</small></article>
+            <article class="stat-card accent-green"><span>Barang Masuk</span><strong id="periodInStat">0</strong><small id="periodInCount">0 transaksi</small></article>
+            <article class="stat-card accent-blue"><span>Barang Keluar</span><strong id="periodOutStat">0</strong><small id="periodOutCount">0 transaksi</small></article>
+            <article class="stat-card accent-orange"><span>Transaksi Persediaan</span><strong id="periodTransactionsStat">0</strong><small id="periodCaption">Periode terpilih</small></article>
+          </div>
+
+          <div class="quick-actions panel">
+            <div><p class="eyebrow">Akses cepat</p><h3>Transaksi Gudang</h3></div>
+            <div class="quick-action-buttons">
+              <button class="quick-action in-action" type="button" data-go-view="receiving"><span>↓</span>Barang Masuk</button>
+              <button class="quick-action out-action" type="button" data-go-view="issuing"><span>↑</span>Barang Keluar</button>
+              <button class="quick-action count-action" type="button" data-go-view="opname"><span>Σ</span>Stock Opname</button>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel dashboard-wide">
+              <div class="panel-header"><div><p class="eyebrow">Receiving dan issuing aktual</p><h3>Monitoring Pergerakan Stok</h3></div></div>
+              <div class="filter-grid dashboard-filters">
+                <label>Periode<select id="dashboardPeriodFilter"><option value="day">Harian</option><option value="week" selected>Mingguan</option><option value="month">Bulanan</option></select></label>
+                <label>Material<select id="dashboardMaterialFilter"><option value="all">Semua material</option></select></label>
+                <label>Kategori<select id="dashboardCategoryFilter"><option value="all">Semua kategori</option></select></label>
+              </div>
+              <div id="movementPeriodCaption" class="muted-note"></div>
+              <div class="movement-summary"><span>Masuk: <strong id="movementInTotal">0</strong></span><span>Keluar: <strong id="movementOutTotal">0</strong></span><span>Perubahan bersih: <strong id="movementNetTotal">0</strong></span></div>
+              <div id="movementChart" class="movement-chart"></div>
+              <div class="chart-legend"><span><i class="legend-in"></i>Barang Masuk</span><span><i class="legend-out"></i>Barang Keluar</span></div>
+              <div class="movement-leaders"><div><h4>Barang masuk terbanyak</h4><div id="topIncomingMaterials"></div></div><div><h4>Barang keluar terbanyak</h4><div id="topOutgoingMaterials"></div></div></div>
+            </section>
+            <section class="panel dashboard-wide">
+              <div class="panel-header"><div><p class="eyebrow">Jumlah item master</p><h3>Material Berdasarkan Kategori</h3></div></div>
+              <div id="categoryChart" class="category-chart"></div>
+            </section>
+            <section class="panel dashboard-wide">
+              <div class="panel-header"><div><p class="eyebrow">Stok saat ini terhadap parameter master</p><h3>Monitoring Minimum–Maximum Stock</h3></div></div>
+              <p class="muted-note">Grafik menampilkan stok aktual dan batas yang sudah diatur pada master material. Material tanpa parameter lengkap tetap ditandai.</p>
+              <div class="range-legend"><span><i class="range-current-key"></i>Stok aktual</span><span><i class="range-min-key"></i>Minimum</span><span><i class="range-max-key"></i>Maximum</span></div>
+              <div id="stockRangeChart" class="stock-range-chart"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header"><div><p class="eyebrow">Kondisi persediaan terkini</p><h3>Ringkasan Status Inventaris</h3></div></div>
+              <div id="inventoryStatusSummary" class="inventory-status-summary"></div>
+            </section>
+            <section class="panel dashboard-wide">
+              <div class="panel-header"><div><p class="eyebrow">Rule-based · keputusan tetap pada pengguna</p><h3>Inventory Alert &amp; Recommendation</h3></div></div>
+              <div class="table-scroll"><table class="data-table recommendation-table"><thead><tr><th>Prioritas</th><th>Material</th><th>Stok / Min / Maks</th><th>Masalah</th><th>Selisih</th><th>Rekomendasi</th></tr></thead><tbody id="priorityStockBody"></tbody></table></div>
+            </section>
+            <section class="panel dashboard-wide">
+              <div class="panel-header"><div><p class="eyebrow">Log aktivitas</p><h3>Aktivitas Terbaru</h3></div><button class="text-link" type="button" data-go-view="movement">Semua movement →</button></div>
+              <div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Aktivitas</th><th>Bahan</th><th>Qty</th><th>Jenis transaksi</th></tr></thead><tbody id="recentActivityBody"></tbody></table></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="materials-view" class="view">
+          <div class="page-intro"><div><h2>Master Bahan Baku</h2><p>Kelola data bahan baku dan batas minimum persediaan.</p></div><span class="count-chip"><strong id="materialCount">0</strong> jenis bahan</span></div>
+          <div class="two-column-layout materials-layout">
+            <section class="panel">
+              <div class="panel-header"><div><p class="eyebrow">Data master</p><h3 id="materialFormHeading">Tambah bahan baku</h3></div></div>
+              <form id="materialForm" class="stack-form">
+                <input type="hidden" id="materialId" />
+                <label>Kode Bahan<input id="materialCode" type="text" placeholder="Contoh: MAT-FAB-015" required /></label>
+                <label>Nama Bahan<input id="materialName" type="text" placeholder="Masukkan nama bahan" required /></label>
+                <div class="field-row two-up">
+                  <label>Kategori<select id="materialCategory"><option value="Kain">Kain</option><option value="Busa">Busa</option><option value="Kawat">Kawat</option><option value="Benang">Benang</option><option value="Webbing">Webbing</option><option value="Cotton">Cotton</option><option value="Lainnya">Lainnya</option></select></label>
+                  <label>Satuan<select id="materialUom"><option value="m">meter</option><option value="pcs">pcs</option><option value="kg">kg</option><option value="roll">roll</option><option value="lembar">lembar</option><option value="box">box</option><option value="set">set</option></select></label>
+                </div>
+                <div class="field-row two-up">
+                  <label>Minimum Stock<input id="materialReorder" type="number" min="0" step="any" value="10" required /></label>
+                  <label>Maximum Stock<input id="materialMaximum" type="number" min="0" step="any" placeholder="Opsional" /></label>
+                </div>
+                <label>Keterangan<input id="materialDescription" type="text" placeholder="Opsional" /></label>
+                <div class="actions-row"><button type="submit" class="primary-btn" id="saveMaterialBtn">Simpan bahan</button><button type="button" id="cancelMaterialEdit" class="secondary-btn hidden">Batal</button></div>
+              </form>
+            </section>
+            <section class="panel">
+              <div class="panel-header"><div><p class="eyebrow">Daftar inventaris</p><h3>Daftar Bahan Baku</h3></div></div>
+              <label class="material-search"><span class="sr-only">Cari bahan baku</span><input id="materialSearch" type="search" placeholder="Cari nama atau kode bahan..." /></label>
+              <div class="table-scroll"><table class="data-table materials-table"><thead><tr><th>Kode</th><th>Nama Bahan</th><th>Kategori</th><th>Satuan</th><th>Min. Stock</th><th>Max. Stock</th><th>Stok Saat Ini</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="materialsTableBody"></tbody></table></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="suppliers-view" class="view">
+          <div class="page-intro"><div><h2>Suppliers</h2><p>Master supplier tetap menggunakan data lokal yang sudah tersimpan.</p></div></div>
+          <div class="two-column-layout">
+            <section class="panel"><div class="panel-header"><h3>Data Supplier</h3></div><form id="supplierForm" class="stack-form"><input id="supplierId" type="hidden" /><label>Nama Supplier<input id="supplierName" required /></label><label>Contact Person<input id="supplierContact" /></label><label>Telepon<input id="supplierPhone" /></label><label>Email<input id="supplierEmail" type="email" /></label><div class="actions-row"><button class="primary-btn" type="submit">Simpan Supplier</button><button id="cancelSupplierEdit" class="secondary-btn hidden" type="button">Batal</button></div></form></section>
+            <section class="panel"><div class="panel-header"><h3>Daftar Supplier</h3></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Nama</th><th>Contact</th><th>Telepon</th><th>Email</th><th>Aksi</th></tr></thead><tbody id="suppliersTableBody"></tbody></table></div></section>
+          </div>
+        </section>
+
+        <section id="locations-view" class="view">
+          <div class="page-intro"><div><h2>Locations</h2><p>Kelola lokasi dan zona penyimpanan gudang.</p></div></div>
+          <div class="two-column-layout">
+            <section class="panel"><div class="panel-header"><h3>Data Lokasi</h3></div><form id="locationForm" class="stack-form"><input id="locationId" type="hidden" /><label>Nama Lokasi<input id="locationName" required /></label><label>Zona<input id="locationZone" required /></label><label>Rak<input id="locationRack" /></label><div class="actions-row"><button class="primary-btn" type="submit">Simpan Lokasi</button><button id="cancelLocationEdit" class="secondary-btn hidden" type="button">Batal</button></div></form></section>
+            <section class="panel"><div class="panel-header"><h3>Daftar Lokasi</h3></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Nama</th><th>Zona</th><th>Rak</th><th>Aksi</th></tr></thead><tbody id="locationsTableBody"></tbody></table></div></section>
+          </div>
+        </section>
+
+        <section id="qc-view" class="view">
+          <div class="page-intro"><div><h2>Quality Control</h2><p>Catat hasil pemeriksaan kualitas material.</p></div></div>
+          <section class="panel form-panel"><div class="panel-header"><h3>Input QC</h3></div><form id="qcForm" class="stack-form"><div class="field-row"><label>Material<select id="qcMaterial" required></select></label><label>Status<select id="qcStatus"><option>Pass</option><option>Fail</option><option>Hold</option></select></label><label>Inspector<input id="qcInspector" /></label></div><label>Catatan<input id="qcRemarks" /></label><button class="primary-btn" type="submit">Simpan QC</button></form></section>
+          <section class="panel"><div class="panel-header"><h3>Riwayat QC</h3></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Material</th><th>Status</th><th>Inspector</th><th>Catatan</th></tr></thead><tbody id="qcTableBody"></tbody></table></div></section>
+        </section>
+
+        <section id="putaway-view" class="view">
+          <div class="page-intro"><div><h2>Putaway</h2><p>Tempatkan material pada lokasi penyimpanan gudang.</p></div></div>
+          <section class="panel form-panel"><div class="panel-header"><h3>Input Putaway</h3></div><form id="putawayForm" class="stack-form"><div class="field-row"><label>Material<select id="putawayMaterial" required></select></label><label>Lokasi<select id="putawayLocation" required></select></label><label>Qty<input id="putawayQty" type="number" min="0.01" step="any" required /></label></div><label>Catatan<input id="putawayRemarks" /></label><button class="primary-btn" type="submit">Simpan Putaway</button></form></section>
+          <section class="panel"><div class="panel-header"><h3>Riwayat Putaway</h3></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Material</th><th>Lokasi</th><th>Qty</th></tr></thead><tbody id="putawayTableBody"></tbody></table></div></section>
+        </section>
+
+        <section id="receiving-view" class="view">
+          <div class="page-intro"><div><h2>Barang Masuk</h2><p>Catat penerimaan bahan baku. Stok akan bertambah otomatis setelah transaksi disimpan.</p></div></div>
+          <section class="panel form-panel"><div class="panel-header"><div><p class="eyebrow">Transaksi inventaris</p><h3>Input Barang Masuk</h3></div></div>
+            <form id="receivingForm" class="stack-form">
+              <div class="field-row three-up">
+                <label>Nomor Transaksi<input id="receivingNo" type="text" placeholder="Otomatis jika dikosongkan" /></label>
+                <label>Tanggal<input id="receivingDate" type="date" required /></label>
+                <label>Kode & Nama Bahan<select id="receivingMaterial" required></select></label>
+              </div>
+              <div class="field-row three-up">
+                <label>Supplier<input id="receivingSupplier" type="text" list="supplierOptions" placeholder="Nama supplier" /><datalist id="supplierOptions"></datalist></label>
+                <label>Qty<input id="receivingQty" type="number" min="0.01" step="any" required /></label>
+                <label>Satuan<input id="receivingUom" type="text" readonly /></label>
+              </div>
+              <div class="field-row three-up">
+                <label>Harga Satuan<input id="receivingCost" type="number" min="0" step="any" value="0" /></label>
+                <label>Nomor Batch / Lot<input id="receivingLot" type="text" placeholder="Opsional" /></label>
+                <label>Keterangan<input id="receivingNotes" type="text" placeholder="Opsional" /></label>
+              </div>
+              <div class="actions-row"><button type="submit" class="primary-btn">Simpan Barang Masuk</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">Riwayat penerimaan</p><h3>Transaksi Barang Masuk</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>No. Transaksi</th><th>Bahan</th><th>Qty</th><th>Supplier</th><th>Harga Satuan</th></tr></thead><tbody id="receivingTableBody"></tbody></table></div></section>
+        </section>
+
+        <section id="issuing-view" class="view">
+          <div class="page-intro"><div><h2>Barang Keluar</h2><p>Catat pemakaian bahan untuk produksi atau kebutuhan lainnya.</p></div></div>
+          <section class="panel form-panel"><div class="panel-header"><div><p class="eyebrow">Transaksi inventaris</p><h3>Input Barang Keluar</h3></div></div>
+            <form id="issuingForm" class="stack-form">
+              <div class="field-row three-up">
+                <label>Nomor Transaksi<input id="issueNo" type="text" placeholder="Otomatis jika dikosongkan" /></label>
+                <label>Tanggal<input id="issueDate" type="date" required /></label>
+                <label>Kode & Nama Bahan<select id="issueMaterial" required></select></label>
+              </div>
+              <div class="field-row three-up">
+                <label>Stok Tersedia<input id="issueAvailable" type="text" readonly value="Pilih bahan untuk melihat stok" /></label>
+                <label>Qty<input id="issueQty" type="number" min="0.01" step="any" required /></label>
+                <label>Satuan<input id="issueUom" type="text" readonly /></label>
+              </div>
+              <div class="field-row two-up">
+                <label>Tujuan / Department<select id="issuePurpose"><option value="Produksi">Produksi</option><option value="Maintenance">Maintenance</option><option value="Sample">Sample</option><option value="Lainnya">Lainnya</option></select></label>
+                <label>Keterangan<input id="issueNotes" type="text" placeholder="Opsional" /></label>
+              </div>
+              <div class="actions-row"><button type="submit" class="primary-btn">Simpan Barang Keluar</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">Riwayat pemakaian</p><h3>Transaksi Barang Keluar</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>No. Transaksi</th><th>Bahan</th><th>Qty</th><th>Tujuan</th></tr></thead><tbody id="issuingTableBody"></tbody></table></div></section>
+        </section>
+
+        <section id="stock-view" class="view">
+          <div class="page-intro"><div><h2>Stok Gudang</h2><p>Posisi stok terkini dihitung dari transaksi barang masuk, keluar, dan opname.</p></div></div>
+          <div class="stats-grid stock-stats">
+            <article class="stat-card"><span>Total Item</span><strong id="stockItemStat">0</strong></article>
+            <article class="stat-card accent-green"><span>Total Quantity</span><strong id="stockQuantityStat">0</strong></article>
+            <article class="stat-card accent-orange"><span>Di Bawah Minimum</span><strong id="stockLowStat">0</strong></article>
+            <article class="stat-card accent-red"><span>Out of Stock</span><strong id="stockOutStat">0</strong></article>
+          </div>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">Inventaris saat ini</p><h3>Posisi Stok Bahan Baku</h3></div></div>
+            <div class="filters-row filter-grid">
+              <label>Cari bahan<input id="stockSearch" type="search" placeholder="Nama atau kode" /></label>
+              <label>Kategori<select id="stockCategoryFilter"><option value="all">Semua kategori</option></select></label>
+              <label>Status<select id="stockStatusFilter"><option value="all">Semua status</option><option value="NORMAL">Normal</option><option value="BELOW MINIMUM">Di bawah minimum</option><option value="OUT OF STOCK">Out of stock</option><option value="ABOVE MAXIMUM">Di atas maksimum</option><option value="PARAMETER INCOMPLETE">Parameter belum lengkap</option></select></label>
+            </div>
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Kode</th><th>Nama Bahan</th><th>Kategori</th><th>Satuan</th><th>Stok Saat Ini</th><th>Minimum Stock</th><th>Maximum Stock</th><th>Status</th><th>Last Updated</th></tr></thead><tbody id="stockTableBody"></tbody></table></div>
+          </section>
+        </section>
+
+        <section id="movement-view" class="view">
+          <div class="page-intro"><div><h2>Stock Movement</h2><p>Histori otomatis untuk setiap transaksi yang mengubah stok gudang.</p></div></div>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">Jejak persediaan</p><h3>Riwayat Pergerakan Stok</h3></div></div>
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Jam</th><th>No. Transaksi</th><th>Jenis</th><th>Kode Bahan</th><th>Nama Bahan</th><th>Qty</th><th>Stok Sebelum</th><th>Stok Sesudah</th><th>Keterangan</th></tr></thead><tbody id="movementTableBody"></tbody></table></div>
+          </section>
+        </section>
+
+        <section id="opname-view" class="view">
+          <div class="page-intro"><div><h2>Stock Opname</h2><p>Cocokkan stok sistem dengan jumlah fisik. Selisih akan menjadi adjustment otomatis.</p></div></div>
+          <section class="panel form-panel"><div class="panel-header"><div><p class="eyebrow">Penyesuaian persediaan</p><h3>Input Stock Opname</h3></div></div>
+            <form id="opnameForm" class="stack-form">
+              <div class="field-row three-up">
+                <label>Nomor Opname<input id="opnameNo" type="text" placeholder="Otomatis jika dikosongkan" /></label>
+                <label>Tanggal<input id="opnameDate" type="date" required /></label>
+                <label>Bahan<select id="opnameMaterial" required></select></label>
+              </div>
+              <div class="field-row three-up">
+                <label>System Stock<input id="opnameSystemQty" type="number" readonly value="0" /></label>
+                <label>Physical Stock<input id="opnameQty" type="number" min="0" step="any" required /></label>
+                <label>Variance<input id="opnameVariance" type="number" readonly value="0" /></label>
+              </div>
+              <label>Keterangan<input id="opnameNotes" type="text" placeholder="Opsional" /></label>
+              <div class="actions-row"><button type="submit" class="primary-btn">Simpan Stock Opname</button></div>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">Riwayat penghitungan fisik</p><h3>Riwayat Stock Opname</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>No. Opname</th><th>Bahan</th><th>System</th><th>Physical</th><th>Variance</th><th>Keterangan</th></tr></thead><tbody id="opnameTableBody"></tbody></table></div></section>
+        </section>
+
+        <section id="reports-view" class="view">
+          <div class="page-intro"><div><h2>Laporan</h2><p>Ringkasan persediaan dan transaksi gudang untuk kebutuhan operasional.</p></div></div>
+          <section class="panel report-filters"><div class="panel-header"><div><p class="eyebrow">Penyaringan laporan</p><h3>Filter & Export</h3></div><button id="exportReportBtn" class="primary-btn" type="button">Export CSV</button></div>
+            <div class="filter-grid">
+              <label>Dari tanggal<input id="reportFromDate" type="date" /></label>
+              <label>Sampai tanggal<input id="reportToDate" type="date" /></label>
+              <label>Bahan<select id="reportMaterialFilter"><option value="all">Semua bahan</option></select></label>
+              <label>Kategori<select id="reportCategoryFilter"><option value="all">Semua kategori</option></select></label>
+              <label>Jenis export<select id="reportExportType"><option value="stock">Laporan Stok</option><option value="receiving">Barang Masuk</option><option value="issuing">Barang Keluar</option><option value="movement">Stock Movement</option><option value="opname">Stock Opname</option></select></label>
+            </div>
+          </section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">A. Laporan stok</p><h3>Posisi Stok</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Kode</th><th>Nama</th><th>Kategori</th><th>Stok</th><th>Minimum</th><th>Maksimum</th><th>Status</th></tr></thead><tbody id="reportStockBody"></tbody></table></div></section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">B. Laporan barang masuk</p><h3>Barang Masuk</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>No Transaksi</th><th>Bahan</th><th>Qty</th><th>Supplier</th></tr></thead><tbody id="reportReceivingBody"></tbody></table></div></section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">C. Laporan barang keluar</p><h3>Barang Keluar</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>No Transaksi</th><th>Bahan</th><th>Qty</th><th>Tujuan</th></tr></thead><tbody id="reportIssuingBody"></tbody></table></div></section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">D. Laporan stock movement</p><h3>Pergerakan Stok</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Bahan</th><th>Qty</th><th>Reference</th></tr></thead><tbody id="reportMovementBody"></tbody></table></div></section>
+          <section class="panel"><div class="panel-header"><div><p class="eyebrow">E. Laporan stock opname</p><h3>Stock Opname</h3></div></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Tanggal</th><th>Bahan</th><th>System</th><th>Physical</th><th>Variance</th></tr></thead><tbody id="reportOpnameBody"></tbody></table></div></section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./data.js"></script>
+    <script src="./utils.js"></script>
+    <script src="./dashboard.js"></script>
+    <script src="./materials.js"></script>
+    <script src="./suppliers.js"></script>
+    <script src="./locations.js"></script>
+    <script src="./qc.js"></script>
+    <script src="./putaway.js"></script>
+    <script src="./receiving.js"></script>
+    <script src="./issuing.js"></script>
+    <script src="./stock.js"></script>
+    <script src="./movement.js"></script>
+    <script src="./opname.js"></script>
+    <script src="./reports.js"></script>
+    <script src="./supabase.js"></script>
+    <script src="./app.js"></script>
+    <script>
+      window.WMS.supabase.start(window.WMS.app.init);
+    </script>
+  </body>
+</html>

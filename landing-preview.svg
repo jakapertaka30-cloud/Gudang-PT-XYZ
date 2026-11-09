@@ -1,0 +1,70 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="900" fill="#EEF3F8"/>
+  <rect x="0" y="0" width="280" height="900" fill="#13283D"/>
+  <rect x="34" y="28" width="210" height="70" rx="18" fill="rgba(255,255,255,0.08)"/>
+  <rect x="48" y="44" width="42" height="42" rx="12" fill="url(#paint0_linear_1_2)"/>
+  <text x="104" y="62" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="700">WMS</text>
+  <text x="104" y="89" fill="#B7D3E9" font-family="Arial, sans-serif" font-size="16">Mattress</text>
+  <rect x="34" y="132" width="212" height="42" rx="10" fill="rgba(255,255,255,0.08)"/>
+  <text x="56" y="159" fill="#EAF4FF" font-family="Arial, sans-serif" font-size="18" font-weight="600">Dashboard</text>
+  <rect x="34" y="190" width="212" height="42" rx="10" fill="rgba(255,255,255,0.04)"/>
+  <text x="56" y="217" fill="#D1DEE9" font-family="Arial, sans-serif" font-size="18">Materials</text>
+  <rect x="34" y="248" width="212" height="42" rx="10" fill="rgba(255,255,255,0.04)"/>
+  <text x="56" y="275" fill="#D1DEE9" font-family="Arial, sans-serif" font-size="18">Suppliers</text>
+
+  <rect x="320" y="32" width="1010" height="836" rx="24" fill="#FFFFFF" stroke="#DDE7F1"/>
+  <rect x="352" y="56" width="340" height="66" rx="16" fill="#F8FBFF"/>
+  <text x="382" y="98" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="15" font-weight="700">Warehouse Management System</text>
+  <text x="382" y="126" fill="#213246" font-family="Arial, sans-serif" font-size="34" font-weight="700">Dashboard</text>
+  <rect x="358" y="160" width="210" height="110" rx="16" fill="#F7FAFF" stroke="#DFE7EF"/>
+  <text x="388" y="196" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="15">Total Materials</text>
+  <text x="388" y="240" fill="#213246" font-family="Arial, sans-serif" font-size="38" font-weight="700">4</text>
+
+  <rect x="590" y="160" width="210" height="110" rx="16" fill="#F4FBFF" stroke="#DFE7EF"/>
+  <text x="620" y="196" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="15">Active Suppliers</text>
+  <text x="620" y="240" fill="#213246" font-family="Arial, sans-serif" font-size="38" font-weight="700">3</text>
+
+  <rect x="822" y="160" width="210" height="110" rx="16" fill="#F0FCF7" stroke="#DFE7EF"/>
+  <text x="852" y="196" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="15">Stock Qty</text>
+  <text x="852" y="240" fill="#213246" font-family="Arial, sans-serif" font-size="38" font-weight="700">97</text>
+
+  <rect x="1054" y="160" width="210" height="110" rx="16" fill="#FFF7ED" stroke="#DFE7EF"/>
+  <text x="1084" y="196" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="15">Low Stock</text>
+  <text x="1084" y="240" fill="#213246" font-family="Arial, sans-serif" font-size="38" font-weight="700">1</text>
+
+  <rect x="358" y="300" width="470" height="240" rx="16" fill="#FBFCFD" stroke="#DFE7EF"/>
+  <text x="382" y="332" fill="#213246" font-family="Arial, sans-serif" font-size="26" font-weight="700">Recent Activities</text>
+  <rect x="382" y="350" width="420" height="54" rx="10" fill="#FFFFFF" stroke="#DFE7EF"/>
+  <text x="404" y="382" fill="#213246" font-family="Arial, sans-serif" font-size="18">Receive — Received Comfort Foam 5cm</text>
+  <rect x="382" y="416" width="420" height="54" rx="10" fill="#FFFFFF" stroke="#DFE7EF"/>
+  <text x="404" y="448" fill="#213246" font-family="Arial, sans-serif" font-size="18">QC — Quality check passed</text>
+  <rect x="382" y="482" width="420" height="54" rx="10" fill="#FFFFFF" stroke="#DFE7EF"/>
+  <text x="404" y="514" fill="#213246" font-family="Arial, sans-serif" font-size="18">Putaway — Moved Stretch Wrap</text>
+
+  <rect x="850" y="300" width="420" height="240" rx="16" fill="#FBFCFD" stroke="#DFE7EF"/>
+  <text x="874" y="332" fill="#213246" font-family="Arial, sans-serif" font-size="26" font-weight="700">Low Stock Alerts</text>
+  <rect x="874" y="350" width="372" height="54" rx="10" fill="#FFF7ED"/>
+  <text x="896" y="382" fill="#C26900" font-family="Arial, sans-serif" font-size="18">Premium Fabric Cover — 12 roll</text>
+  <rect x="874" y="416" width="372" height="54" rx="10" fill="#FFF7ED"/>
+  <text x="896" y="448" fill="#C26900" font-family="Arial, sans-serif" font-size="18">Comfort Foam 5cm — 60 pcs</text>
+
+  <rect x="358" y="566" width="912" height="250" rx="16" fill="#FBFCFD" stroke="#DFE7EF"/>
+  <text x="382" y="598" fill="#213246" font-family="Arial, sans-serif" font-size="26" font-weight="700">Current Stock</text>
+  <line x1="382" y1="612" x2="1240" y2="612" stroke="#DFE7EF"/>
+  <text x="382" y="668" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="16" font-weight="700">Material</text>
+  <text x="610" y="668" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="16" font-weight="700">Location</text>
+  <text x="808" y="668" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="16" font-weight="700">Qty</text>
+  <text x="930" y="668" fill="#6B7A8A" font-family="Arial, sans-serif" font-size="16" font-weight="700">Status</text>
+  <text x="382" y="714" fill="#213246" font-family="Arial, sans-serif" font-size="22">Comfort Foam 5cm</text>
+  <text x="610" y="714" fill="#213246" font-family="Arial, sans-serif" font-size="22">RM-101</text>
+  <text x="808" y="714" fill="#213246" font-family="Arial, sans-serif" font-size="22">60</text>
+  <rect x="930" y="692" width="108" height="28" rx="14" fill="#EBFAF2"/>
+  <text x="961" y="711" fill="#1B8A62" font-family="Arial, sans-serif" font-size="14" font-weight="700">Available</text>
+
+  <defs>
+    <linearGradient id="paint0_linear_1_2" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1B6FB8"/>
+      <stop offset="1" stop-color="#102C4B"/>
+    </linearGradient>
+  </defs>
+</svg>
